@@ -1,8 +1,9 @@
 import av
 import numpy as np
 import pygame
-import time
 import pygame.surfarray as surfarray
+
+from skimage.segmentation import slic, mark_boundaries
 
 def render(video):
 
@@ -19,11 +20,14 @@ def render(video):
                 array = np.rot90(array)
                 array = np.flipud(array)
 
+                # TODO: Keyer
+                segments = slic(array, slic_zero=True)
+                array = mark_boundaries(array, segments, color=[5, 5, 5])
+                array = array * 255
+
                 # Create surface if None
                 if surface is None:
                     surface = pygame.display.set_mode(array.shape[:2], 0, 32)
-
-                # TODO: Keyer
 
                 # Write array to surface
                 surfarray.blit_array(surface, array)
